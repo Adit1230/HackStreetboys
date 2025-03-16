@@ -41,4 +41,4 @@ GAME_END_TIME = GAME_START_TIME + GAME_TOTAL_TIME
 FRAMES = 6
 SIGNAL_LENGTH = 200
 
-CENTERS = pd.read_csv("/home/shivam/code-masala/clash/CodewarsV5/data/image_centers/troops_center.csv",index_col="troop")
+CENTERS = pd.read_csv("./data/image_centers/troops_center.csv",index_col="troop")

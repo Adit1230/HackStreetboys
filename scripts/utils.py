@@ -4,7 +4,7 @@ from scripts.game_config import *
 import math
 import random
 
-BASE_IMG_PATH = '/home/shivam/code-masala/clash/CodewarsV5/data/images/'
+BASE_IMG_PATH = './data/images/'
 
 def load_image(path, color_key = None):
     img = pygame.image.load(BASE_IMG_PATH + path).convert_alpha()

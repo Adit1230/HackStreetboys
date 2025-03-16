@@ -2,7 +2,7 @@ import pygame
 from scripts.game_config import *
 class Decoration:
     def entry_text(self):
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//37)  # Default font, size 26
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//37)  # Default font, size 26
 
         texts = [self.team_name2,"v/s",self.team_name1]
         for i, text in enumerate(texts):
@@ -13,8 +13,8 @@ class Decoration:
     def outro_text(self):
         self.tower1.render()
         self.tower2.render()
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//27)
-        font2 = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//80)  # Default font, size 36
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//27)
+        font2 = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//80)  # Default font, size 36
         if not self.winner:
             if self.tower1.health > self.tower2.health:
                 self.winner = self.team_name1
@@ -100,7 +100,7 @@ class Decoration_Left:
             self.left_screen.blit(image,(CARD_PLATE_WIDTH*1//6,int(FULL_WIDTH*11/108 + (CARD_PLATE_HEIGHT*93/832)*i)))
 
     def render_time(self):
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//39)
         remaining_seconds = (GAME_END_TIME - self.game_counter)//10
         minutes = remaining_seconds // 60
         seconds = remaining_seconds % 60
@@ -129,7 +129,7 @@ class Decoration_Left:
             self.left_screen.blit(img,(FULL_WIDTH*0.118 + i*FULL_WIDTH*0.046,FULL_HEIGHT*0.159))
             
     def render_team_name(self):
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//39)
         name = self.team_name1
         text = font.render(f'{name}',True,(255,255,255))
         self.left_screen.blit(text,(FULL_WIDTH*(0.2-0.0055*len(name)),FULL_HEIGHT*0.114))
@@ -171,7 +171,7 @@ class Decoration_Right:
 
     def render_game_speed(self):
         game_speed = self.fps/FPS
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//39)
         text = font.render(f'x{game_speed}',True,((244,196,76)))
         self.right_screen.blit(text,(FULL_WIDTH*0.31,FULL_HEIGHT*0.96)) 
         
@@ -186,7 +186,7 @@ class Decoration_Right:
             self.right_screen.blit(img,(FULL_WIDTH*0.068 + i*FULL_WIDTH*0.046,FULL_HEIGHT*0.159))
             
     def render_team_name(self):
-        font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        font = pygame.font.Font("./data/font/clashroyale.ttf", FULL_HEIGHT//39)
         name = self.team_name2
         text = font.render(f'{name}',True,(255,255,255))
         self.right_screen.blit(text,(FULL_WIDTH*(0.16-0.0055*len(name)),FULL_HEIGHT*0.114))

@@ -1,5 +1,5 @@
-from teams import a,b
+from teams import Our_team, Opponent
 
-TEAM1 = a
-TEAM2 = b
+TEAM1 = Our_team
+TEAM2 = Opponent
 VALUE_ERROR = False
