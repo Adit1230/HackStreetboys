@@ -4,6 +4,7 @@ os.environ["SDL_AUDIODRIVER"] = "dummy"  # ✅ Disable audio to prevent PulseAud
 
 import pygame
 import sys
+import time
 from scripts.utils import *
 from scripts.statics import *
 from scripts.assets import load_assets
@@ -16,6 +17,8 @@ from scripts.game_config import *
 class Game:
     def __init__(self, troops1, troops2, team_name1, team_name2):
         pygame.init()
+        self.start_time = time.time()
+
         try:
             self.screen = pygame.display.set_mode((800, 600))  # Create screen (ignored in dummy mode)
         except pygame.error as e:
@@ -118,6 +121,9 @@ class Game:
 
             # ✅ Check for game end and set the winning condition
             if self.game_counter >= GAME_END_TIME:
+                self.end_time = time.time()
+                duration = round(self.end_time - self.start_time, 2)  # In seconds
+
                 if self.tower1.health > self.tower2.health:
                     self.winner = self.team_name1
                     self.message = "DECIDED BY TIE BREAKER 1"
@@ -136,11 +142,12 @@ class Game:
 
                 if self.winner == self.team_name1:
                     pygame.quit()
-                    return f"{self.team_name1} won - {self.message}"
+                    return f"{self.team_name1} won - {self.message} ({duration} secs)"
                 elif self.winner == self.team_name2:
                     pygame.quit()
-                    return f"{self.team_name2} won - {self.message}"
+                    return f"{self.team_name2} won - {self.message} ({duration} secs)"
                 else:
                     pygame.quit()
-                    return "Match Draw"
+                    return f"Match Draw ({duration} secs)"
+
 

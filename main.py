@@ -1,10 +1,11 @@
 from game import Game
 import inspect
+import time
 from config import TEAM1, TEAM2
 from multiprocessing import Process, Manager
 
 # Number of matches to simulate
-NUM_MATCHES = 5
+NUM_MATCHES = 50
 
 
 def validate_module(module, name):
@@ -47,7 +48,6 @@ def validate_module(module, name):
     return True
 
 def run_match(match_num, results):
-    global tb1wins, tb2wins, tb1losses, tb2losses
     print(f"Starting match {match_num}...")
     
     result = Game(
@@ -56,13 +56,14 @@ def run_match(match_num, results):
 
     if "won" in result:
         winner = result.split(" ")[0]  # Extract winner's name
-        reason = result.split()[-1]
-        #print(reason)
+        reason = result.split()[-3]  # Extract tie breaker reason (1 or 2)
+        duration = float(result.split("(")[-1].split()[0])  # Extract duration
+
         if winner == TEAM1.team_name:
             results["win"] += 1
             if int(reason) == 1:
                 results["tb1wins"] += 1
-            elif int(reason) == 1:
+            elif int(reason) == 2:  # ✅ Fixed from 1 to 2
                 results["tb2wins"] += 1
         else:
             results["loss"] += 1
@@ -70,12 +71,19 @@ def run_match(match_num, results):
                 results["tb1losses"] += 1
             elif int(reason) == 2:
                 results["tb2losses"] += 1
+
+        results["total_time"] += duration  # ✅ Track game time
         print(f"Match {match_num} → 🏆 {result}")
-    elif result == "Match Draw":
+
+    elif "Match Draw" in result:
+        duration = float(result.split("(")[-1].split()[0])
         results["draw"] += 1
-        print(f"Match {match_num} → 🤝 DRAW")
+        results["total_time"] += duration
+        print(f"Match {match_num} → 🤝 DRAW ({duration} secs)")
+
     else:
         print(f"Match {match_num} → ❓ UNKNOWN RESULT: {result}")
+
 
 
 def main():
@@ -94,7 +102,8 @@ def main():
             "tb1wins": 0,
             "tb2wins": 0,
             "tb1losses": 0,
-            "tb2losses": 0
+            "tb2losses": 0,
+            "total_time": 0
         })
 
         processes = []
