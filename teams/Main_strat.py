@@ -18,8 +18,9 @@
 #     deploy_list.deploy_dragon((-16,0))
 
 from teams.helper_function import Troops, Utils
+import numpy as np
 
-team_name = "Adit"
+team_name = "Hackstreet boys"
 troops = [Troops.wizard,Troops.minion,Troops.archer,Troops.valkyrie,Troops.dragon,Troops.skeleton,Troops.giant,Troops.musketeer]
 deploy_list = Troops([])
 team_signal = "[['', '', '', '', '', '', '', ''], ['', '', '', ''], 10, 0, ['']]"
@@ -62,25 +63,34 @@ def logic(arena_data:dict):
     '''deploy_list.list_.append((arena_data["MyTower"].deployable_troops[0],(0,0)))
     deploy_list.list_.append((arena_data["MyTower"].deployable_troops[1],(0,0)))'''
 
+    counters = np.array([
+    #  Arch  Min  Knig Skel Drag Valk Musk Gian Prin Barb Ball Wiz  (Defending Troops)
+    [  0,    1,  -1,   0,   0,  -1,  -1,   0,   0,   0,   1,  -1],  # Archer (Attacking)
+    [ -1,    0,   1,   1,  -1,   1,  -1,   1,   1,   0,   1,  -1],  # Minion
+    [  1,   -1,   0,  -1,   0,   0,   0,   0,   0,  -1,   0,   0],  # Knight
+    [  0,   -1,   1,   0,  -1,  -1,   0,   1,   1,   0,   0,  -1],  # Skeleton
+    [  1,    1,   0,   1,   0,   1,  -1,   0,   0,   1,   1,   0],  # Dragon
+    [  1,   -1,   0,   1,  -1,   0,   0,   0,  -1,   1,   0,   1],  # Valkyrie
+    [  1,    1,   0,   0,   1,   0,   0,   0,  -1,   0,   1,   0],  # Musketeer
+    [  0,   -1,  -1,  -1,   0,   0,  -1,   0,  -1,  -1,  -1,   0],  # Giant
+    [  1,   -1,   1,  -1,   0,   0,   1,   1,   0,  -1,   0,   0],  # Prince
+    [  0,    0,   1,   0,  -1,  -1,   0,   1,   1,   0,   0,  -1],  # Barbarian
+    [  0,   -1,   0,   0,  -1,   0,  -1,   0,   0,   0,   0,  -1],  # Balloon
+    [  1,    1,   0,   1,   0,   0,   0,   1,   0,   1,   1,   0]   # Wizard
+    ])
 
-    wanted_troops = ["Giant", "Wizard", "Skeleton"]
-    troop_elixirs = [5, 5, 3]
-    positions = [50, 25, 20]
-    deployable_troops = arena_data["MyTower"].deployable_troops
-    if(wanted_troops[0] in deployable_troops and wanted_troops[1] in deployable_troops and wanted_troops[2] in deployable_troops) or stored_data[0]:
-        if stored_data[0] == '2' and arena_data['MyTower'].total_elixir > troop_elixirs[2]:
-            deploy_list.list_.append((wanted_troops[2], (25, positions[2])))
-            stored_data[0] = ''
-        elif stored_data[0] == '1' and arena_data['MyTower'].total_elixir > troop_elixirs[1]:
-            deploy_list.list_.append((wanted_troops[1], (25, positions[1])))
-            stored_data[0] = '2'
-        elif arena_data['MyTower'].total_elixir >= 9:
-            deploy_list.list_.append((wanted_troops[0], (25, positions[0])))
-            stored_data[0] = '1'
-    else:
-        for troop in deployable_troops:
-            if troop not in wanted_troops:
-                deploy_list.list_.append((troop, (0, 0)))
-                break
+    opp_troops = np.zeros(12)
+    all_troops = ["Archer", "Minion", "Knight", "Skeleton", "Dragon", "Valkyrie", "Musketeer", "Giant", "Prince", "Barbarian", "Balloon", "Wizard"]
+    troop_counts = [2, 3, 1, 10, 1, 1, 1, 1, 1, 3, 1, 1]
+
+    for troop in arena_data['OppTroops']:
+        opp_troops[all_troops.index(troop.name)] += 1/troop_counts[all_troops.index(troop.name)]
+    
+    troop_scores = counters @ opp_troops
+    deployable_troop_scores = [troop_scores[all_troops.index(troop)] for troop in arena_data['MyTower'].deployable_troops]
+    for i in range(4):
+        if(deployable_troop_scores[i] == max(deployable_troop_scores)):
+            deploy_list.list_.append((arena_data['MyTower'].deployable_troops[i], (0, 0)))
+    
 
     team_signal = str(eval(team_signal)[:4] + [stored_data])
