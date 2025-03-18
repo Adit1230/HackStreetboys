@@ -108,21 +108,39 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        self.fps = min(70,self.fps+5)
+                        self.fps = min(70, self.fps + 5)
                     if event.key == pygame.K_DOWN:
-                        self.fps = max(5,self.fps - 5)
+                        self.fps = max(5, self.fps - 5)
+
             pygame.display.update()
             self.clock.tick(self.fps)
             self.game_counter += 1
 
-             # Check for game end
+            # ✅ Check for game end and set the winning condition
             if self.game_counter >= GAME_END_TIME:
+                if self.tower1.health > self.tower2.health:
+                    self.winner = self.team_name1
+                    self.message = "DECIDED BY TIE BREAKER 1"
+                elif self.tower1.health < self.tower2.health:
+                    self.winner = self.team_name2
+                    self.message = "DECIDED BY TIE BREAKER 1"
+                elif self.tower1.tower_in_range > self.tower2.tower_in_range:
+                    self.winner = self.team_name1
+                    self.message = "DECIDED BY TIE BREAKER 2"
+                elif self.tower1.tower_in_range < self.tower2.tower_in_range:
+                    self.winner = self.team_name2
+                    self.message = "DECIDED BY TIE BREAKER 2"
+                else:
+                    self.winner = "Tie"
+                    self.message = "MATCH DRAW"
+
                 if self.winner == self.team_name1:
                     pygame.quit()
-                    return "WIN"
+                    return f"{self.team_name1} won - {self.message}"
                 elif self.winner == self.team_name2:
                     pygame.quit()
-                    return "LOSS"
+                    return f"{self.team_name2} won - {self.message}"
                 else:
                     pygame.quit()
-                    return "DRAW"
+                    return "Match Draw"
+

@@ -35,15 +35,15 @@ def deploy(arena_data:dict):
 def update_signal(team_signal, arena_data):
     troop_names = {'A' : 'Archer', 'm' : 'Minion', 'K' : 'Knight', 'S' : 'Skeleton', 'D' : 'Dragon', 'V' : 'Valkyrie', 'M' : 'Musketeer', 'G' : 'Giant', 'P' : 'Prince', 'b' : 'Barbarian', 'B' : 'Balloon', 'W' : 'Wizard', '' : ''}
     troop_codes = {c : t for (t, c) in troop_names.items()}
-    troop_elixirs = {"Archer": 3, "Minion": 5, "Knight": 3, "Skeleton": 3, "Dragon": 4, "Va"
+    troop_elixirs = {"Archer": 3, "Minion": 3, "Knight": 3, "Skeleton": 3, "Dragon": 4, "Va"
     "lkyrie": 4, "Musketeer": 4, "Giant": 5, "Prince": 5, "Barbarian": 3, "Balloon": 5, "Wizard": 5}
     opp_data = eval(team_signal)
     for troop in arena_data['OppTroops']:
-        # print(troop.uid)
+        # # print(troop.uid)
         if troop_codes[troop.name] not in opp_data[0]:
             for i in range(8):
                 if opp_data[0][i] == '':
-                    # print("found new troop")
+                    # # print("found new troop")
                     opp_data[0][i] = troop_codes[troop.name]
                     break       
         if (troop.uid > opp_data[3]) and (troop_codes[troop.name] not in opp_data[1]):

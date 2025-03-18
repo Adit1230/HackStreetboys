@@ -14,7 +14,8 @@ class Decoration:
         self.tower1.render()
         self.tower2.render()
         font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//27)
-        font2 = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//80)  # Default font, size 36
+        font2 = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//80)
+        
         if not self.winner:
             if self.tower1.health > self.tower2.health:
                 self.winner = self.team_name1
@@ -30,7 +31,9 @@ class Decoration:
                 self.message = "DECIDED BY TIE BREAKER 2"
             else:
                 self.winner = "Tie"
-        if self.winner == "Tie":
+                self.message = "MATCH DRAW"
+        
+        """ if self.winner == "Tie":
             text_surface = font.render(self.winner, True, (255,255,255))
             text_rect = text_surface.get_rect(center=(MIDDLE_WIDTH // 2 , MIDDLE_HEIGHT // 2))
             self.middle_screen.blit(text_surface, text_rect)
@@ -38,13 +41,16 @@ class Decoration:
             texts = ["Winner", self.winner]
             for i, text in enumerate(texts):
                 text_surface = font.render(text, True, (255,255,255))
-                text_rect = text_surface.get_rect(center=(MIDDLE_WIDTH // 2 , MIDDLE_HEIGHT // 2+ (i-1)*(FULL_HEIGHT//24)))
+                text_rect = text_surface.get_rect(center=(MIDDLE_WIDTH // 2 , MIDDLE_HEIGHT // 2 + (i-1)*(FULL_HEIGHT//24)))
                 self.middle_screen.blit(text_surface, text_rect)
+        
         if self.message:
             text_surface = font2.render(self.message, True, (255,0,0))
             text_rect = text_surface.get_rect(center=(MIDDLE_WIDTH // 2 , MIDDLE_HEIGHT // 2 + (FULL_HEIGHT//24)))
-            self.middle_screen.blit(text_surface, text_rect)
-        print(self.winner)
+            self.middle_screen.blit(text_surface, text_rect) """
+        
+        print(f"🏆 {self.winner} - {self.message}")
+
 
     def check_game_end(self):
         if self.tower1.health <= 0 and self.tower2.health <= 0:

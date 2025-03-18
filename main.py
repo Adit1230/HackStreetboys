@@ -4,7 +4,8 @@ from config import TEAM1, TEAM2
 from multiprocessing import Process, Manager
 
 # Number of matches to simulate
-NUM_MATCHES = 100
+NUM_MATCHES = 5
+
 
 def validate_module(module, name):
     attributes = dir(module)
@@ -43,32 +44,41 @@ def validate_module(module, name):
         return False
     
     print(f"Pass: All conditions met for {name} : {module.team_name}!")
-
     return True
 
 def run_match(match_num, results):
+    global tb1wins, tb2wins, tb1losses, tb2losses
     print(f"Starting match {match_num}...")
     
-    # Start the game and capture the result
     result = Game(
         TEAM1.troops, TEAM2.troops, TEAM1.team_name, TEAM2.team_name
     ).run()
-    
-    # Update the shared results
-    if result == "WIN":
-        results["win"] += 1
-        print(f"Match {match_num} → ✅ WIN")
-    elif result == "LOSS":
-        results["loss"] += 1
-        print(f"Match {match_num} → ❌ LOSS")
-    elif result == "DRAW":
+
+    if "won" in result:
+        winner = result.split(" ")[0]  # Extract winner's name
+        reason = result.split()[-1]
+        #print(reason)
+        if winner == TEAM1.team_name:
+            results["win"] += 1
+            if int(reason) == 1:
+                results["tb1wins"] += 1
+            elif int(reason) == 1:
+                results["tb2wins"] += 1
+        else:
+            results["loss"] += 1
+            if int(reason) == 1:
+                results["tb1losses"] += 1
+            elif int(reason) == 2:
+                results["tb2losses"] += 1
+        print(f"Match {match_num} → 🏆 {result}")
+    elif result == "Match Draw":
         results["draw"] += 1
         print(f"Match {match_num} → 🤝 DRAW")
     else:
         print(f"Match {match_num} → ❓ UNKNOWN RESULT: {result}")
 
+
 def main():
-    # Keep the original validation conditions unchanged
     team1_test_pass = validate_module(TEAM1, "TEAM 1")
     team2_test_pass = validate_module(TEAM2, "TEAM 2")
 
@@ -77,26 +87,38 @@ def main():
         return
 
     with Manager() as manager:
-        # Shared result dictionary to store match outcomes
-        results = manager.dict({"win": 0, "loss": 0, "draw": 0})
+        results = manager.dict({
+            "win": 0, 
+            "loss": 0, 
+            "draw": 0,
+            "tb1wins": 0,
+            "tb2wins": 0,
+            "tb1losses": 0,
+            "tb2losses": 0
+        })
 
-        # Start multiple processes for parallel execution
         processes = []
         for i in range(NUM_MATCHES):
             p = Process(target=run_match, args=(i + 1, results))
             p.start()
             processes.append(p)
 
-        # Wait for all processes to finish
         for p in processes:
             p.join()
 
-        # Final result summary
         print("\n====== FINAL MATCH SUMMARY ======")
-        print(f"✅ Wins: {results['win']}")
-        print(f"❌ Losses: {results['loss']}")
+        print(f"✅ Totals Wins: {results['win']}")
+        print(f"❌ Total Losses: {results['loss']}")
         print(f"🤝 Draws: {results['draw']}")
         print("==============================")
+        print(f"✅ Tie Breaker 1 wins: {results['tb1wins']}")
+        print(f"✅ Tie Breaker 2 wins: {results['tb2wins']}")
+        print("==============================")
+        print(f"❌ Tie Breaker 1 losses: {results['tb1losses']}")
+        print(f"❌ Tie Breaker 2 losses: {results['tb2losses']}")
+        print("==============================")
+
+
 
 if __name__ == "__main__":
     main()
