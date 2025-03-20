@@ -3,7 +3,7 @@ from scripts.game_config import *
 class Decoration:
     def entry_text(self):
         pass
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//37)  # Default font, size 26
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//37)  # Default font, size 26
 
         # texts = [self.team_name2,"v/s",self.team_name1]
         # for i, text in enumerate(texts):
@@ -14,8 +14,8 @@ class Decoration:
     def outro_text(self):
         # self.tower1.render()
         # self.tower2.render()
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//27)
-        # font2 = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//80)
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//27)
+        # font2 = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//80)
         
         if not self.winner:
             if self.tower1.health > self.tower2.health:
@@ -111,7 +111,7 @@ class Decoration_Left:
 
     def render_time(self):
         pass
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//39)
         # remaining_seconds = (GAME_END_TIME - self.game_counter)//10
         # minutes = remaining_seconds // 60
         # seconds = remaining_seconds % 60
@@ -143,7 +143,7 @@ class Decoration_Left:
             
     def render_team_name(self):
         pass
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//39)
         # name = self.team_name1
         # text = font.render(f'{name}',True,(255,255,255))
         # self.left_screen.blit(text,(FULL_WIDTH*(0.2-0.0055*len(name)),FULL_HEIGHT*0.114))
@@ -189,7 +189,7 @@ class Decoration_Right:
     def render_game_speed(self):
         pass
         # game_speed = self.fps/FPS
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//39)
         # text = font.render(f'x{game_speed}',True,((244,196,76)))
         # self.right_screen.blit(text,(FULL_WIDTH*0.31,FULL_HEIGHT*0.96)) 
         
@@ -206,7 +206,7 @@ class Decoration_Right:
             
     def render_team_name(self):
         pass
-        # font = pygame.font.Font("/home/shivam/code-masala/clash/CodewarsV5/data/font/clashroyale.ttf", FULL_HEIGHT//39)
+        # font = pygame.font.Font("data/font/clashroyale.ttf", FULL_HEIGHT//39)
         # name = self.team_name2
         # text = font.render(f'{name}',True,(255,255,255))
         # self.right_screen.blit(text,(FULL_WIDTH*(0.16-0.0055*len(name)),FULL_HEIGHT*0.114))
