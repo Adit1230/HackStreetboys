@@ -1,5 +1,5 @@
-from teams import a,b
+from teams import Main_strat,pratyaksh, priyam, towertactics, claude,perplex
 
-TEAM1 = a
-TEAM2 = b
+TEAM1 = perplex
+TEAM2 = pratyaksh
 VALUE_ERROR = False

@@ -5,7 +5,7 @@ from config import TEAM1, TEAM2
 from multiprocessing import Process, Manager
 
 # Number of matches to simulate
-NUM_MATCHES = 10
+NUM_MATCHES = 20
 
 
 def validate_module(module, name):
