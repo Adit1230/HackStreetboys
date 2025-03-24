@@ -2,23 +2,25 @@ from teams.helper_function import Troops, Utils
 import numpy as np
 import math
 
-team_name = "perplex"
+team_name = "Hackstreet boys"
 troops = [Troops.wizard, Troops.minion, Troops.archer, Troops.valkyrie, Troops.dragon, Troops.skeleton, Troops.giant, Troops.musketeer]
 deploy_list = Troops([])
 team_signal = "[['', '', '', '', '', '', '', ''], ['', '', '', ''], 10, 0, ['']]"
 
-def deploy(arena_data:dict):
+def deploy(arena_data: dict):
     """
-    DON'T TEMPER DEPLOY FUCNTION
+    DON'T TEMPER DEPLOY FUNCTION
     """
     deploy_list.list_ = []
     logic(arena_data)
     return deploy_list.list_, team_signal
 
 def update_signal(team_signal, arena_data):
-    troop_names = {'A': 'Archer', 'm': 'Minion', 'K': 'Knight', 'S': 'Skeleton', 'D': 'Dragon', 'V': 'Valkyrie', 'M': 'Musketeer', 'G': 'Giant', 'P': 'Prince', 'b': 'Barbarian', 'B': 'Balloon', 'W': 'Wizard', '': ''}
+    troop_names = {'A': 'Archer', 'm': 'Minion', 'K': 'Knight', 'S': 'Skeleton', 'D': 'Dragon', 'V': 'Valkyrie', 
+                   'M': 'Musketeer', 'G': 'Giant', 'P': 'Prince', 'b': 'Barbarian', 'B': 'Balloon', 'W': 'Wizard', '': ''}
     troop_codes = {c: t for (t, c) in troop_names.items()}
-    troop_elixirs = {"Archer": 3, "Minion": 3, "Knight": 3, "Skeleton": 3, "Dragon": 4, "Valkyrie": 4, "Musketeer": 4, "Giant": 5, "Prince": 5, "Barbarian": 3, "Balloon": 5, "Wizard": 5}
+    troop_elixirs = {"Archer": 3, "Minion": 3, "Knight": 3, "Skeleton": 3, "Dragon": 4, "Valkyrie": 4, 
+                    "Musketeer": 4, "Giant": 5, "Prince": 5, "Barbarian": 3, "Balloon": 5, "Wizard": 5}
     opp_data = eval(team_signal)
     for troop in arena_data['OppTroops']:
         if troop_codes[troop.name] not in opp_data[0]:
@@ -36,14 +38,13 @@ def update_signal(team_signal, arena_data):
     return str(opp_data), curr_cards
 
 def get_distance(pos1, pos2):
-    """Calculate Euclidean distance between two positions"""
-    return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
+    """Calculate Euclidean distance between two positions."""
+    return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
 
 def determine_range_index(distance, attack_range):
-    """Determine which range index to use based on distance and troop's attack range"""
+    """Determine which range index to use based on distance and troop's attack range."""
     if attack_range == 0:  # Melee troops always use short range
         return 0
-    
     if distance <= attack_range:  # Short range: within attack range
         return 0
     elif distance <= attack_range * 2:  # Medium range: within 2x attack range
@@ -54,22 +55,22 @@ def determine_range_index(distance, attack_range):
 def get_troop_stats():
     """Get stats for all troops from the image data"""
     stats = {
-        "Archer": {"attack_range": 5, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 334, "damage": 118, "velocity": "Medium", "elixir": 3},
-        "Minion": {"attack_range": 2, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 252, "damage": 129, "velocity": "Fast", "elixir": 3},
-        "Knight": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 1938, "damage": 221, "velocity": "Medium", "elixir": 3},
-        "Skeleton": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 89, "damage": 89, "velocity": "Fast", "elixir": 3},
-        "Dragon": {"attack_range": 3.5, "splash": 1, "targets": ["Air", "Ground", "Building"], "health": 1267, "damage": 176, "velocity": "Fast", "elixir": 4},
-        "Valkyrie": {"attack_range": 0, "splash": 1, "targets": ["Ground", "Building"], "health": 2097, "damage": 195, "velocity": "Medium", "elixir": 4},
-        "Musketeer": {"attack_range": 6, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 792, "damage": 239, "velocity": "Medium", "elixir": 4},
-        "Giant": {"attack_range": 0, "splash": 0, "targets": ["Building"], "health": 5423, "damage": 337, "velocity": "Slow", "elixir": 5},
-        "Prince": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 1920, "damage": 392, "velocity": "Fast", "elixir": 5},
-        "Barbarian": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 736, "damage": 161, "velocity": "Medium", "elixir": 3},
-        "Balloon": {"attack_range": 0, "splash": 1, "targets": ["Building"], "health": 2226, "damage": 424, "velocity": "Medium", "elixir": 5},
-        "Wizard": {"attack_range": 5.5, "splash": 1, "targets": ["Air", "Ground", "Building"], "health": 1100, "damage": 410, "velocity": "Medium", "elixir": 5},
+        "Archer": {"attack_range": 5, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 334, "damage": 118, "velocity": "Medium", "elixir": 3, "discovery": 8},
+        "Minion": {"attack_range": 2, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 252, "damage": 129, "velocity": "Fast", "elixir": 3, "discovery": 4},
+        "Knight": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 1938, "damage": 221, "velocity": "Medium", "elixir": 3, "discovery": 7},
+        "Skeleton": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 89, "damage": 89, "velocity": "Fast", "elixir": 3, "discovery": 4},
+        "Dragon": {"attack_range": 3.5, "splash": 1, "targets": ["Air", "Ground", "Building"], "health": 1267, "damage": 176, "velocity": "Fast", "elixir": 4, "discovery": 5},
+        "Valkyrie": {"attack_range": 0, "splash": 1, "targets": ["Ground", "Building"], "health": 2097, "damage": 195, "velocity": "Medium", "elixir": 4, "discovery": 7},
+        "Musketeer": {"attack_range": 6, "splash": 0, "targets": ["Air", "Ground", "Building"], "health": 792, "damage": 239, "velocity": "Medium", "elixir": 4, "discovery": 8},
+        "Giant": {"attack_range": 0, "splash": 0, "targets": ["Building"], "health": 5423, "damage": 337, "velocity": "Slow", "elixir": 5, "discovery": 7},
+        "Prince": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 1920, "damage": 392, "velocity": "Fast", "elixir": 5, "discovery": 5},
+        "Barbarian": {"attack_range": 0, "splash": 0, "targets": ["Ground", "Building"], "health": 736, "damage": 161, "velocity": "Medium", "elixir": 3, "discovery": 5},
+        "Balloon": {"attack_range": 0, "splash": 1, "targets": ["Building"], "health": 2226, "damage": 424, "velocity": "Medium", "elixir": 5, "discovery": 5},
+        "Wizard": {"attack_range": 5.5, "splash": 1, "targets": ["Air", "Ground", "Building"], "health": 1100, "damage": 410, "velocity": "Medium", "elixir": 5, "discovery": 8},
     }
     return stats
 
-def logic(arena_data:dict):
+def logic(arena_data: dict):
     global team_signal
     team_signal, curr_cards = update_signal(team_signal, arena_data)
     stored_data = eval(team_signal)[4]
@@ -95,18 +96,21 @@ def logic(arena_data:dict):
     troop_counts = [2, 3, 1, 10, 1, 1, 1, 1, 1, 3, 1, 1]
     troop_stats = get_troop_stats()
     
-    # Define grid of possible deployment positions
+    # Define grid of possible deployment positions ON OUR SIDE
     grid_x = list(range(-25, 26, 5))  # X coordinates from -25 to 25 with step 5
     grid_y = list(range(0, 51, 5))    # Y coordinates from 0 to 50 with step 5
     
-    # Get details of opponent troops
+    # Get details of opponent troops - INCLUDE BOTH SIDES OF ARENA
     opp_troops_details = []
     for troop in arena_data['OppTroops']:
+        # Include troops from both our side AND enemy side
+        # Enemy side is from y=50 to y=100
         opp_troops_details.append({
             'name': troop.name,
             'position': (troop.position[0], troop.position[1]),
             'index': all_troops.index(troop.name),
-            'health': troop.health
+            'health': troop.health,
+            'on_enemy_side': troop.position[1] >= 50
         })
     
     # Best positions for each deployable troop
@@ -114,6 +118,19 @@ def logic(arena_data:dict):
     
     # Current elixir
     current_elixir = arena_data['MyTower'].total_elixir
+    
+    # Set default to center if no enemy troops
+    if not opp_troops_details:
+        for deployable_troop in arena_data['MyTower'].deployable_troops:
+            stats = troop_stats[deployable_troop]
+            elixir_cost = stats["elixir"]
+            if elixir_cost <= current_elixir:
+                deploy_list.list_.append((deployable_troop, (0, 25)))  # Deploy at center of our side
+                current_elixir -= elixir_cost
+                if current_elixir <= 0:
+                    break
+        team_signal = str(eval(team_signal)[:4] + [stored_data])
+        return
     
     # Check deployable troops
     for deployable_troop in arena_data['MyTower'].deployable_troops:
@@ -123,18 +140,20 @@ def logic(arena_data:dict):
         splash = stats["splash"]
         targets = stats["targets"]
         elixir_cost = stats["elixir"]
+        discovery_range = stats["discovery"]
         
         # Skip if not enough elixir
         if elixir_cost > current_elixir:
             continue
         
         best_score = -float('inf')
-        best_position = (0, 0)
+        best_position = (0, 25)  # Default to center of our side
         
-        # Check each position in the grid
+        # Check each position in the grid (our side only)
         for x in grid_x:
             for y in grid_y:
                 position_score = 0
+                troops_in_range = False
                 
                 # Check if there are opponent troops that this troop can counter
                 for opp_troop in opp_troops_details:
@@ -144,37 +163,57 @@ def logic(arena_data:dict):
                     opp_position = opp_troop['position']
                     
                     # Check if the troop can target this opponent (air/ground)
-                    can_target = True
-                    if "Air" in opp_stats["targets"] and "Air" not in targets:
-                        can_target = False
+                    can_target = False
+                    if "Air" in targets and opp_stats["type"] == "Air":
+                        can_target = True
+                    elif "Ground" in targets and opp_stats["type"] == "Ground":
+                        can_target = True
                     
                     if can_target:
                         distance = get_distance((x, y), opp_position)
                         
-                        # Determine range index based on distance and attack range
-                        range_idx = determine_range_index(distance, attack_range)
-                        
-                        # Get advantage score for this matchup at this range
-                        advantage = counters_3d[attacking_idx][opp_idx][range_idx]
-                        
-                        # Calculate effectiveness score
-                        health_weight = opp_troop['health'] / 1000  # Normalize health
-                        
-                        # Splash damage bonus against grouped enemies
-                        splash_bonus = 1.0
-                        if splash > 0:
-                            # Check if there are multiple enemies nearby
-                            nearby_count = 0
-                            for other_troop in opp_troops_details:
-                                if get_distance(opp_position, other_troop['position']) < splash + 3:
-                                    nearby_count += 1
-                            splash_bonus = 1.0 + (nearby_count * 0.25)  # 25% bonus per nearby enemy
-                        
-                        # Distance penalty (prefer closer engagements for better reaction time)
-                        distance_penalty = max(0.5, 1.0 - (distance / 50))
-                        
-                        # Add to position score
-                        position_score += advantage * health_weight * splash_bonus * distance_penalty
+                        # Check if opponent is within discovery range
+                        if distance <= discovery_range:
+                            troops_in_range = True
+                            
+                            # Determine range index based on distance and attack range
+                            range_idx = determine_range_index(distance, attack_range)
+                            
+                            # Get advantage score for this matchup at this range
+                            advantage = counters_3d[attacking_idx][opp_idx][range_idx]
+                            
+                            # Calculate effectiveness score
+                            health_weight = opp_troop['health'] / 1000  # Normalize health
+                            
+                            # Splash damage bonus against grouped enemies
+                            splash_bonus = 1.0
+                            if splash > 0:
+                                # Check if there are multiple enemies nearby
+                                nearby_count = 0
+                                for other_troop in opp_troops_details:
+                                    if get_distance(opp_position, other_troop['position']) < splash + 3:
+                                        nearby_count += 1
+                                splash_bonus = 1.0 + (nearby_count * 0.25)  # 25% bonus per nearby enemy
+                            
+                            # Prioritize troops on our side vs enemy side
+                            # Give higher priority to troops already on our side
+                            side_priority = 1.5 if not opp_troop['on_enemy_side'] else 1.0
+                            
+                            # Calculate distance priority - closer enemies on our side are higher priority
+                            # Further enemies on enemy side (but coming) are higher priority
+                            if opp_troop['on_enemy_side']:
+                                # For troops on enemy side, prioritize those closer to border
+                                distance_priority = 1.0 - ((opp_position[1] - 50) / 50)  # 1.0 at border, 0.0 at y=100
+                            else:
+                                # For troops on our side, prioritize those closer to our tower
+                                distance_priority = 1.0 - (opp_position[1] / 50)  # 1.0 at y=0, 0.0 at y=50
+                            
+                            # Add to position score
+                            position_score += advantage * health_weight * splash_bonus * side_priority * distance_priority
+                
+                # If no troops in range, don't deploy randomly
+                if not troops_in_range:
+                    continue
                 
                 # Defensive positioning (prefer positions that protect your tower)
                 tower_distance = get_distance((x, y), (0, 0))
@@ -193,7 +232,7 @@ def logic(arena_data:dict):
                     best_position = (x, y)
         
         # Factor in elixir cost for final score (elixir efficiency)
-        elixir_efficiency = best_score / elixir_cost
+        elixir_efficiency = best_score / elixir_cost if best_score > 0 else -float('inf')
         best_positions[deployable_troop] = (best_position, elixir_efficiency)
     
     # Sort deployable troops by their elixir-adjusted scores
@@ -202,10 +241,25 @@ def logic(arena_data:dict):
     # Deploy troops at their optimal positions, considering elixir constraints
     remaining_elixir = current_elixir
     
-    for troop, (position, _) in sorted_troops:
-        elixir_cost = troop_stats[troop]["elixir"]
-        if elixir_cost <= remaining_elixir:
-            deploy_list.list_.append((troop, position))
-            remaining_elixir -= elixir_cost
+    # If no good positions found (no troops in range), deploy at center
+    if not sorted_troops:
+        for deployable_troop in arena_data['MyTower'].deployable_troops:
+            stats = troop_stats[deployable_troop]
+            elixir_cost = stats["elixir"]
+            if elixir_cost <= remaining_elixir:
+                deploy_list.list_.append((deployable_troop, (0, 25)))  # Deploy at center
+                remaining_elixir -= elixir_cost
+                if remaining_elixir <= 0:
+                    break
+    else:
+        for troop, (position, score) in sorted_troops:
+            # Skip deployments with negative scores
+            if score <= 0:
+                continue
+                
+            elixir_cost = troop_stats[troop]["elixir"]
+            if elixir_cost <= remaining_elixir:
+                deploy_list.list_.append((troop, position))
+                remaining_elixir -= elixir_cost
     
     team_signal = str(eval(team_signal)[:4] + [stored_data])

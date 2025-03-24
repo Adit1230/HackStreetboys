@@ -123,7 +123,12 @@ class Game:
             if self.game_counter >= GAME_END_TIME:
                 self.end_time = time.time()
                 duration = round(self.end_time - self.start_time, 2)  # In seconds
-
+                if self.tower1.health <= 0:
+                    self.winner = self.team_name2
+                    self.message = "DESTROYED TOWER CODE: 0"
+                if self.tower2.health <= 0:
+                    self.winner = self.team_name1
+                    self.message = "DESTROYED TOWER CODE: 0"
                 if self.tower1.health > self.tower2.health:
                     self.winner = self.team_name1
                     self.message = "DECIDED BY TIE BREAKER 1"
