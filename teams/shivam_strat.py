@@ -2,7 +2,7 @@ from teams.helper_function import Troops, Utils
 import numpy as np
 import math
 
-team_name = "AggressiveHackstreet"
+team_name = "AggressiveHackstreet,4p"
 troops = [Troops.wizard, Troops.minion, Troops.archer, Troops.valkyrie, Troops.dragon, Troops.skeleton, Troops.knight, Troops.musketeer]
 deploy_list = Troops([])
 team_signal = "[['', '', '', '', '', '', '', ''], ['', '', '', ''], 10, 0, ['']]"
@@ -65,7 +65,7 @@ def logic(arena_data: dict):
     }
 
     counters = np.array([
-    # Arch       Min        Knig     Skel     Drag     Valk     Musk     Gian     Prin     Barb     Ball     Wiz      (Defending Troops)
+    # Arch       Min        Knig     Skel     Drag     Valk       Musk     Gian     Prin     Barb     Ball     Wiz      (Defending Troops)
     [  0.000,  -35.592,  -8.277,  -14.952,  -13.544,   -1.038,  -11.787,    1.579,    4.874,   -8.820,  -12.933,   -6.564],  # Archer (Attacking)
     [ 35.592,    0.000,   20.490,    6.185,    8.137,   31.499,   18.788,   37.541,   60.668,   -0.350,   21.588,   -2.160],  # Minion
     [  8.277,  -20.490,    0.000,   -7.472,   -6.364,    5.875,   -3.091,    8.952,   15.043,   -3.910,   -3.230,   -1.074],  # Knight
@@ -77,16 +77,22 @@ def logic(arena_data: dict):
     [ -4.874,  -60.669,  -15.043,  -24.801,  -21.346,   -7.717,  -21.373,   -2.892,    0.000,  -14.205,  -23.105,  -13.027],  # Prince
     [  8.820,    0.350,    3.910,    0.603,    0.186,    8.475,    3.688,    9.225,   14.205,    0.000,    3.964,    2.046],  # Barbarian
     [ 12.933,  -21.588,    3.230,   -6.470,   -4.497,    9.250,   -0.450,   13.714,   23.105,   -3.964,    0.000,   -2.787],  # Balloon
-    [  6.564,    2.160,    1.074,    0.054,   -1.513,    9.340,    2.975,    8.085,   13.027,   -2.046,    2.787,    0.000]   # Wizard
+    [  6.564,    2.160,    1.074,    0.054,   -1.513,    9.340,    2.975,    8.085,   13.027,   12.046,    2.787,    0.000]   # Wizard
     ])
 
     # List of all troops in the same order as the matrix
     all_troops = ["Archer", "Minion", "Knight", "Skeleton", "Dragon", "Valkyrie", "Musketeer", "Giant", "Prince", "Barbarian", "Balloon", "Wizard"]
     troop_counts = [2, 3, 1, 10, 1, 1, 1, 1, 1, 3, 1, 1]
 
+    # Get enemy troops and their positions
+    enemy_troops = arena_data['OppTroops']
+
+
+
     def calculate_best_position(our_troop, enemy_troop, enemy_position):
         """
         Calculate the best position to deploy our troop based on enemy troop properties.
+        Modified for aggressive positioning.
         """
         # Get properties from the merged dictionary
         our_props = TROOP_PROPERTIES.get(our_troop, {"attack_range": 0, "discovery_range": 0, "is_splash": False, "can_attack_air": False})
@@ -94,35 +100,26 @@ def logic(arena_data: dict):
 
         our_range = our_props["attack_range"]*factor
         enemy_range = enemy_props["attack_range"]*factor
-        enemy_discovery = enemy_props["discovery_range"]*factor
-        is_enemy_splash = enemy_props["is_splash"]
-        can_enemy_attack_air = enemy_props["can_attack_air"]
-
-        # Determine if our troop is air or ground
         is_our_troop_air = our_troop in {"Minion", "Dragon", "Balloon"}
+        is_enemy_air = enemy_troop in {"Minion", "Dragon", "Balloon"}
 
-        # Check if the enemy can counter our troop
-        if (is_our_troop_air and not can_enemy_attack_air) or (not is_our_troop_air):
-            # Enemy cannot counter our troop (e.g., our troop is air and enemy cannot attack air)
-            # Deploy as close as possible to the enemy to minimize travel time
-            deploy_y = enemy_position[1] - our_range
-            deploy_x = enemy_position[0]
+        # AGGRESSIVE: Position troops ahead of enemy to intercept and push forward
+        enemy_x, enemy_y = enemy_position
+
+        # For air troops or troops that counter the enemy well, deploy more aggressively
+        if is_our_troop_air or not enemy_props["can_attack_air"]:
+            # Aggressive positioning - deploy directly on top of enemy for quick damage
+            deploy_x = enemy_x
+            deploy_y = min(50, enemy_y + 5)  # Push slightly ahead of enemy
+        elif our_props["attack_range"] > 0:
+            # For ranged troops, stay just within attack range but be aggressive
+            deploy_x = enemy_x
+            deploy_y = min(50, enemy_y + our_range/2)  # Position closer to enemy
         else:
-            # Enemy can counter our troop
-            # Calculate safe distance
-            safe_distance = enemy_discovery # Stay outside enemy range
-
-            # Calculate optimal position
-            enemy_x, enemy_y = enemy_position
-            if our_range > enemy_range:
-                # Deploy within our attack range but outside enemy range
-                deploy_x = enemy_x 
-                deploy_y = enemy_y - safe_distance
-            else:
-                # Deploy at a safe distance and flank the enemy
-                deploy_x = enemy_x + safe_distance if enemy_x < 0 else enemy_x - safe_distance
-                deploy_y = enemy_y + 5  # Offset vertically to avoid splash damage
-
+            # For melee troops, deploy directly in enemy path but slightly ahead
+            deploy_x = enemy_x
+            deploy_y = min(50, enemy_y + 10)  # Position ahead to intercept
+        
         # Ensure position is within arena bounds
         deploy_x = max(-25, min(25, deploy_x))
         deploy_y = max(0, min(50, deploy_y))
@@ -131,41 +128,25 @@ def logic(arena_data: dict):
 
     def deploy_offensive_pair(frontline_troop, support_troop):
         """
-        Deploy a pair of troops with the frontline troop in front and the backline troop slightly behind.
+        Deploy an aggressive troop pair on the offensive.
         """
-        # Get enemy troops and their positions
-        enemy_troops = arena_data['OppTroops']
+        # Deploy troops toward the enemy side of the arena
+        frontline_pos = (0, 50)  # Deploy at center of border 
+        support_pos = (0, 45)    # Support slightly behind
         
-        if enemy_troops:
-            # If there are enemy troops, deploy near the closest one
-            closest_enemy = min(enemy_troops, key=lambda x: x.position[1])
-            deploy_pos = calculate_best_position(frontline_troop, closest_enemy.name, closest_enemy.position)
-            
-            # Deploy the frontline troop
-            deploy_list.list_.append((frontline_troop, deploy_pos))
-            
-            # Deploy the backline troop slightly behind
-            backline_pos = (deploy_pos[0], deploy_pos[1] - 5)  # 5 units behind
-            deploy_list.list_.append((support_troop, backline_pos))
+        # For side attacks, choose a random side
+        if np.random.random() > 0.5:
+            frontline_pos = (15, 50)  # Right side attack
+            support_pos = (10, 45)
         else:
-            # If no enemies, deploy at the border
-            # Choose between left, center, or right lane attack
-            lane = np.random.choice(["left", "center", "right"])
-            
-            if lane == "left":
-                attack_x = -10
-            elif lane == "right":
-                attack_x = 10
-            else:
-                attack_x = 0
-                
-            # Deploy frontline troop at the border
-            deploy_list.list_.append((frontline_troop, (attack_x, 50)))
-            # Deploy support troop slightly behind
-            deploy_list.list_.append((support_troop, (attack_x, 45)))
+            frontline_pos = (-15, 50)  # Left side attack
+            support_pos = (-10, 45)
+        
+        deploy_list.list_.append((frontline_troop, frontline_pos))
+        deploy_list.list_.append((support_troop, support_pos))
 
-    # Get enemy troops and their positions
-    enemy_troops = arena_data['OppTroops']
+    
+    # AGGRESSIVE: Always prioritize attacking over defending
     my_elixir = arena_data["MyTower"].total_elixir
     deployable_troops = arena_data['MyTower'].deployable_troops
     
@@ -177,28 +158,9 @@ def logic(arena_data: dict):
     # Calculate counter scores
     troop_scores = counters @ opp_troops
     
-    # First priority: Defend tower if enemies are close
-    tower_position = (0, 0)  # Our tower position
-    for enemy in enemy_troops:
-        enemy_distance_to_tower = Utils.calculate_distance(enemy, arena_data['MyTower'], type_troop=True)
-        if enemy_distance_to_tower < 20*factor:  # Use tower's attack range as threshold
-            # Deploy best counter troops to defend the tower
-            deployable_troop_scores = [troop_scores[all_troops.index(troop)] for troop in deployable_troops]
-            best_counter = deployable_troops[np.argmax(deployable_troop_scores)]
-            deploy_pos = calculate_best_position(best_counter, enemy.name, enemy.position)
-            deploy_list.list_.append((best_counter, deploy_pos))
-            
-            # If we have enough elixir, deploy a second troop for support
-            if my_elixir >= 6 and len(deployable_troops) > 1:
-                second_best_index = np.argsort(deployable_troop_scores)[-2]
-                second_best = deployable_troops[second_best_index]
-                deploy_pos_2 = (deploy_pos[0] + 5, deploy_pos[1] - 5)
-                deploy_list.list_.append((second_best, deploy_pos_2))
-            break
-    
-    # Second priority: Deploy offensive pairs if no immediate threats
-    if not deploy_list.list_ and my_elixir >= 7:
-        # Look for powerful offensive combinations
+    # AGGRESSIVE: Set up immediate offensive push if we have enough elixir
+    if my_elixir >= 7:
+        # Look for powerful offensive combinations first
         if "Wizard" in deployable_troops and "Knight" in deployable_troops:
             deploy_offensive_pair("Knight", "Wizard")
         elif "Dragon" in deployable_troops and "Knight" in deployable_troops:
@@ -210,23 +172,37 @@ def logic(arena_data: dict):
         elif "Musketeer" in deployable_troops and "Knight" in deployable_troops:
             deploy_offensive_pair("Knight", "Musketeer")
     
-    # Third priority: Deploy single counter troops if needed
+    # If we couldn't deploy offensive pairs but have enemy troops, deploy counters aggressively
     if not deploy_list.list_ and enemy_troops:
+        # Find the best counter troop
         deployable_troop_scores = [troop_scores[all_troops.index(troop)] for troop in deployable_troops]
-        best_counter = deployable_troops[np.argmax(deployable_troop_scores)]
+        best_counter_index = np.argmax(deployable_troop_scores)
+        best_counter = deployable_troops[best_counter_index]
+        
+        # Find closest enemy to our border (lowest y)
         closest_enemy = min(enemy_troops, key=lambda x: x.position[1])
+        
+        # AGGRESSIVE: Deploy counter troop aggressively
         deploy_pos = calculate_best_position(best_counter, closest_enemy.name, closest_enemy.position)
         deploy_list.list_.append((best_counter, deploy_pos))
+        
+        # If we have enough elixir, deploy a second troop for support
+        if my_elixir >= 6 and len(deployable_troops) > 1:
+            second_best_index = np.argsort(deployable_troop_scores)[-2]
+            second_best = deployable_troops[second_best_index]
+            # Deploy second troop slightly offset
+            deploy_pos_2 = (deploy_pos[0] + 5, deploy_pos[1] - 5)
+            deploy_list.list_.append((second_best, deploy_pos_2))
     
-    # Last priority: Launch preemptive attack if no enemies and no troops deployed
-    if not deploy_list.list_ and not enemy_troops:
-        # Choose between left, center, or right lane attack
+    # AGGRESSIVE: If no enemies and no troops deployed yet, launch preemptive attack
+    if not deploy_list.list_:
+        # Choose between left, center, or right lane attack randomly
         lane = np.random.choice(["left", "center", "right"])
         
         if lane == "left":
-            attack_x = -10
+            attack_x = -20
         elif lane == "right":
-            attack_x = 10
+            attack_x = 20
         else:
             attack_x = 0
             

@@ -5,7 +5,7 @@ from config import TEAM1, TEAM2
 from multiprocessing import Process, Manager
 
 # Number of matches per batch and number of batches
-MATCHES_PER_BATCH = 10
+MATCHES_PER_BATCH = 25
 NUM_BATCHES = 10
 
 
